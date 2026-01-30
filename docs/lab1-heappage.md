@@ -1,4 +1,4 @@
-_Due Date: Tuesday, October 8th, 2024 at 11:59 am (Noon)_
+_Due Date: Tuesday, Feburary 24th, 2026 at 11:59 am (Noon)_
 
 Welcome to CrustyDB! CrustyDB is an academic Rust-based relational database
 management system built by [ChiData at The University of
@@ -124,7 +124,10 @@ Every stored value is associated with a `ValueId`. This is defined in
 `common::ids`. Each ValueId must specify a `ContainerId` (which is associated with
 exactly one container) and then a set of optional Id types. For this lab,
 we will use `PageId` and `SlotId` for each `ValueId`. The data types used for
-these Ids are also defined in `common::ids`.
+these Ids are also defined in `common::ids`. 
+
+To map to what we have discussed in the class, a `ValueId` is a `RecordId`, the `ContainerId` is the `FileId`, 
+which represents a file and a relation.
 
 ```
 pub type ContainerId = u16;
@@ -503,10 +506,7 @@ more complex pages and verity that the implementation is correct.
 ### Testing
 80% of your score on this lab is based on correctness. Correctness is
 demonstrated by passing all of the provided unit in the HS package related to
-the page. We also will have additional tests that will not be provided but
-evaluate requirements from this document. 
-Majority of the points will come from
-the provided tests. To run the provided tests use `cargo test -p heapstore
+the page. There will be 20 tests in total. To run the provided tests use `cargo test -p heapstore
 hs_page` and ensure all the tests pass.
 
 ### Quality
@@ -515,6 +515,7 @@ hs_page` and ensure all the tests pass.
 1. **Comments**: You should have comments for all new helper functions, constants and other identifiers that you add.
 2. **Proper Types**: You should use suitable custom types. For example, you should use `SlotId` instead of `u16` when referring to a slot number. 
 3. **Magic Numbers**: You should avoid magic numbers in your code. If you have a constant that is used in multiple places, you should define it as a constant at the top of the file.
+4. **Descriptive Names**: Ensure that variables, functions, and constants have descriptive names that convey their purpose. Please don't use single-letter names or abbreviations unless they are widely recognized and contextually appropriate.
 
 You could use `cargo fmt` to format your code in the right "style" and use 
 `cargo clippy` to identify issues about your code, for either performance reasons or code quality. 
