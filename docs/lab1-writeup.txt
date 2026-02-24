@@ -1,0 +1,43 @@
+Lab 1 Write-Up
+
+Design Decisions
+
+Header layout (8 bytes fixed):
+  Bytes 0-1: PageId (set by Page::new)
+  Bytes 2-3: num_slots (u16) — total slot entries ever allocated
+  Bytes 4-5: free_start (u16) — offset of next free byte in the body
+  Bytes 6-7: reserved
+
+Each slot entry (6 bytes):
+  Bytes 0-1: record offset (u16)
+  Bytes 2-3: record length (u16)
+  Byte  4:   in_use flag (1 = valid, 0 = deleted)
+  Byte  5:   padding
+
+The header grows upward and the body grows from the header's end. This means
+adding a new slot shifts all body bytes right by 6 (shift_body_for_new_slot).
+Deleted slots keep their offset/length so the space can be reclaimed.
+
+We always insert at free_start. If thereis not enough contiguous space at 
+free_start but enough total free space exists,compact first to eliminate all
+gaps, then insert. This avoids maintaining a free-list while still satisfying
+the "must accept if enough total free space" requirement.
+
+get_free_space() = PAGE_SIZE - header_size - sum(live record lengths). This
+counts all reclaimable space regardless of fragmentation.
+
+Deleted slot IDs are reused by scanning for the lowest in_use=0 entry. A new
+slot entry is added only when no free slot exists.
+
+--- Time Spent ---
+
+~40-50 hours total. The tricky part was getting shift_body_for_new_slot correct:
+the body must be shifted before the free-space/contiguous check so that
+free_start is already updated when we decide whether to compact, and all slot
+offsets (including deleted ones acting as holes) need to be bumped.
+
+Liked: the Rust type system caught most off-by-one and overflow bugs at compile
+time. The incremental test suite was very helpful for building up the solution.
+Disliked: debugging raw byte layout without a visualizer was tedious.
+
+

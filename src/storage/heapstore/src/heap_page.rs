@@ -4,94 +4,351 @@ use common::prelude::*;
 use common::PAGE_SIZE;
 use std::fmt;
 use std::fmt::Write;
-// todo!("Add any other imports you need here")
 
-// Add any other constants, type aliases, or structs, or definitions here
+///byte length of a slot value distinct from Offset which is a position
+pub type SlotLength = u16;
+
+//page header field byte offsets
+///num_slots byte offset in the header
+const PAGE_META_NUM_SLOTS_OFFSET: usize = 2;
+///free_start byte offset in the header
+const PAGE_META_FREE_START_OFFSET: usize = 4;
+///reserved padding byte offset in the header
+const PAGE_META_RESERVED_OFFSET: usize = 6;
+///size of the fixed page metadata block
+const FIXED_PAGE_META_SIZE: usize = 8;
+///size of one slot metadata entry
+const BYTES_PER_SLOT_META: usize = 6;
+
+//slot entry field offsets relative to slot entry start
+///record page offset within a slot entry
+const SLOT_OFFSET_OFFSET: usize = 0;
+///record byte length within a slot entry
+const SLOT_LENGTH_OFFSET: usize = 2;
+///in_use flag offset within a slot entry
+const SLOT_IN_USE_OFFSET: usize = 4;
+
+///slot holds a live record
+const SLOT_IN_USE_VALID: u8 = 1;
+///slot is free or deleted
+const SLOT_IN_USE_FREE: u8 = 0;
 
 pub trait HeapPage {
-    // Do not change these functions signatures (only the function bodies)
     fn add_value(&mut self, bytes: &[u8]) -> Option<SlotId>;
     fn get_value(&self, slot_id: SlotId) -> Option<Vec<u8>>;
     fn delete_value(&mut self, slot_id: SlotId) -> Option<()>;
     fn get_header_size(&self) -> usize;
     fn get_free_space(&self) -> usize;
-
-    //Add function signatures for any helper function you need here
 }
 
 impl HeapPage for Page {
-    /// Attempts to add a new value to this page if there is space available.
-    /// Returns Some(SlotId) if it was inserted or None if there was not enough space.
-    /// Note that where the bytes are stored in the page does not matter (heap), but it
-    /// should not change the slotId for any existing value. This means that
-    /// bytes in the page may not follow the slot order.
-    /// If a slot is deleted you should reuse the slotId in the future.
-    /// The page should always assign the lowest available slot_id to an insertion.
-    ///
-    /// HINT: You can copy/clone bytes into a slice using the following function.
-    /// They must have the same size.
-    /// self.data[X..y].clone_from_slice(&bytes);
-    fn add_value(&mut self, bytes: &[u8]) -> Option<SlotId> {
-        todo!("Your code here")
-    }
-
-    /// Return the bytes for the slotId. If the slotId is not valid then return None
-    fn get_value(&self, slot_id: SlotId) -> Option<Vec<u8>> {
-        todo!("Your code here")
-    }
-
-    /// Delete the bytes/slot for the slotId. If the slotId is not valid then return None
-    /// The slotId for a deleted slot should be assigned to the next added value
-    /// The space for the value should be free to use for a later added value.
-    /// HINT: Return Some(()) for a valid delete
-    fn delete_value(&mut self, slot_id: SlotId) -> Option<()> {
-        todo!("Your code here")
-    }
-
-    /// A utility function to determine the size of the header in the page
-    /// when serialized/to_bytes.
-    /// Will be used by tests.
-    #[allow(dead_code)]
+    ///total header size including all slot entries
     fn get_header_size(&self) -> usize {
-        todo!("Your code here")
+        FIXED_PAGE_META_SIZE + self.get_num_slots() * BYTES_PER_SLOT_META
     }
 
-    /// A utility function to determine the total current free space in the page.
-    /// This should account for the header space used and space that could be reclaimed if needed.
-    /// Will be used by tests.
-    #[allow(dead_code)]
+    ///free bytes remaining
     fn get_free_space(&self) -> usize {
-        todo!("Your code here")
+        let header_size = self.get_header_size();
+        let used_bytes: usize = self
+            .iter_used_slots()
+            .map(|(_, len)| len as usize)
+            .sum::<usize>();
+        PAGE_SIZE.saturating_sub(header_size).saturating_sub(used_bytes)
+    }
+
+    ///inserts bytes and returns the assigned SlotId or None if no space
+    ///always reuses the lowest free SlotId
+    fn add_value(&mut self, bytes: &[u8]) -> Option<SlotId> {
+        let value_len = bytes.len();
+        if value_len > PAGE_SIZE {
+            return None;
+        }
+    
+        let slot_id = self.find_lowest_free_slot_id();
+        let num_slots = self.get_num_slots();
+        let need_new_slot = (slot_id as usize) >= num_slots;
+    
+        let extra_header = if need_new_slot { BYTES_PER_SLOT_META } else { 0 };
+        if self.get_free_space() < value_len + extra_header {
+            return None;
+        }
+    
+        //compact before growing the header so free_start is accurate for the shift
+        let free_start = self.get_free_start();
+        let contiguous_space = PAGE_SIZE.saturating_sub(free_start + extra_header);
+        if contiguous_space < value_len {
+            self.compact();
+        }
+    
+        if need_new_slot {
+            if num_slots > 0 {
+                self.shift_body_for_new_slot();
+            }
+            self.set_num_slots(num_slots + 1);
+        }
+    
+        let insert_offset = self.get_free_start();
+        if insert_offset + value_len > PAGE_SIZE {
+            return None;
+        }
+    
+        self.data[insert_offset..insert_offset + value_len].clone_from_slice(bytes);
+        self.write_slot(slot_id, insert_offset as Offset, value_len as SlotLength, SLOT_IN_USE_VALID);
+        self.set_free_start(insert_offset + value_len);
+    
+        Some(slot_id)
+    }
+
+    ///record bytes for slot_id or None if invalid or deleted
+    fn get_value(&self, slot_id: SlotId) -> Option<Vec<u8>> {
+        if self.get_slot_in_use(slot_id)? != SLOT_IN_USE_VALID {
+            return None;
+        }
+        let (offset, length) = self.get_slot_offset_length(slot_id)?;
+        let offset = offset as usize;
+        let length = length as usize;
+        if offset + length > PAGE_SIZE {
+            return None;
+        }
+        Some(self.data[offset..offset + length].to_vec())
+    }
+
+    ///marks slot as free or None if out of range or already deleted
+    fn delete_value(&mut self, slot_id: SlotId) -> Option<()> {
+        if (slot_id as usize) >= self.get_num_slots() {
+            return None;
+        }
+        if self.get_slot_in_use(slot_id)? != SLOT_IN_USE_VALID {
+            return None;
+        }
+        self.set_slot_in_use(slot_id, SLOT_IN_USE_FREE);
+        Some(())
     }
 }
 
-/// The (consuming) iterator struct for a page.
-/// This should iterate through all valid values of the page.
+//private helper methods
+impl Page {
+    ///number of slot entries in the header
+    fn get_num_slots(&self) -> usize {
+        u16::from_le_bytes(
+            self.data[PAGE_META_NUM_SLOTS_OFFSET..PAGE_META_NUM_SLOTS_OFFSET + 2]
+                .try_into()
+                .unwrap(),
+        ) as usize
+    }
+
+    ///writes num_slots to the header
+    fn set_num_slots(&mut self, n: usize) {
+        self.data[PAGE_META_NUM_SLOTS_OFFSET..PAGE_META_NUM_SLOTS_OFFSET + 2]
+            .copy_from_slice(&(n as u16).to_le_bytes());
+    }
+
+    ///first free body byte clamps to body_start if the stored value is stale
+    fn get_free_start(&self) -> usize {
+        let num_slots = self.get_num_slots();
+        let body_start = FIXED_PAGE_META_SIZE + num_slots * BYTES_PER_SLOT_META;
+        let stored = Offset::from_le_bytes(
+            self.data[PAGE_META_FREE_START_OFFSET..PAGE_META_FREE_START_OFFSET + 2]
+                .try_into()
+                .unwrap(),
+        ) as usize;
+        let raw = if stored < body_start { body_start } else { stored };
+        raw.min(PAGE_SIZE)
+    }
+
+    ///writes free_start to the header clamped to PAGE_SIZE
+    fn set_free_start(&mut self, pos: usize) {
+        let pos = pos.min(PAGE_SIZE);
+        self.data[PAGE_META_FREE_START_OFFSET..PAGE_META_FREE_START_OFFSET + 2]
+            .copy_from_slice(&(pos as Offset).to_le_bytes());
+    }
+
+    ///byte offset of slot_id metadata entry in data
+    fn slot_meta_offset(&self, slot_id: SlotId) -> usize {
+        FIXED_PAGE_META_SIZE + (slot_id as usize) * BYTES_PER_SLOT_META
+    }
+
+    ///offset and length for slot_id or None if out of range
+    fn get_slot_offset_length(&self, slot_id: SlotId) -> Option<(Offset, SlotLength)> {
+        if slot_id as usize >= self.get_num_slots() {
+            return None;
+        }
+        let base = self.slot_meta_offset(slot_id);
+        let offset = Offset::from_le_bytes(
+            self.data[base + SLOT_OFFSET_OFFSET..base + SLOT_OFFSET_OFFSET + 2]
+                .try_into()
+                .unwrap(),
+        );
+        let length = SlotLength::from_le_bytes(
+            self.data[base + SLOT_LENGTH_OFFSET..base + SLOT_LENGTH_OFFSET + 2]
+                .try_into()
+                .unwrap(),
+        );
+        Some((offset, length))
+    }
+
+    ///in_use flag for slot_id or None if out of range
+    fn get_slot_in_use(&self, slot_id: SlotId) -> Option<u8> {
+        if slot_id as usize >= self.get_num_slots() {
+            return None;
+        }
+        let base = self.slot_meta_offset(slot_id);
+        Some(self.data[base + SLOT_IN_USE_OFFSET])
+    }
+
+    ///sets in_use for slot_id
+    fn set_slot_in_use(&mut self, slot_id: SlotId, in_use: u8) {
+        let base = self.slot_meta_offset(slot_id);
+        self.data[base + SLOT_IN_USE_OFFSET] = in_use;
+    }
+
+    ///writes offset and length and in_use into slot_id metadata
+    fn write_slot(&mut self, slot_id: SlotId, offset: Offset, length: SlotLength, in_use: u8) {
+        let base = self.slot_meta_offset(slot_id);
+        self.data[base..base + 2].copy_from_slice(&offset.to_le_bytes());
+        self.data[base + 2..base + 4].copy_from_slice(&length.to_le_bytes());
+        self.data[base + SLOT_IN_USE_OFFSET] = in_use;
+    }
+
+    ///lowest free SlotId or num_slots if all in use
+    fn find_lowest_free_slot_id(&self) -> SlotId {
+        let num_slots = self.get_num_slots();
+        for slot_id in 0..num_slots {
+            if self
+                .get_slot_in_use(slot_id as SlotId)
+                .map_or(true, |u| u == SLOT_IN_USE_FREE)
+            {
+                return slot_id as SlotId;
+            }
+        }
+        num_slots as SlotId
+    }
+
+    ///slot_id and length for every live slot
+    fn iter_used_slots(&self) -> impl Iterator<Item = (SlotId, SlotLength)> + '_ {
+        let num_slots = self.get_num_slots();
+        (0..num_slots).filter_map(move |i| {
+            let sid = i as SlotId;
+            if self
+                .get_slot_in_use(sid)
+                .map_or(false, |u| u == SLOT_IN_USE_VALID)
+            {
+                self.get_slot_offset_length(sid).map(|(_, len)| (sid, len))
+            } else {
+                None
+            }
+        })
+    }
+
+    ///moves all live records to body start and resets free_start
+    fn compact(&mut self) {
+        let num_slots = self.get_num_slots();
+        let body_start = FIXED_PAGE_META_SIZE + num_slots * BYTES_PER_SLOT_META;
+
+        //sort by offset so copies never overlap
+        let mut used: Vec<(SlotId, usize, usize)> = (0..num_slots)
+            .filter_map(|i| {
+                let sid = i as SlotId;
+                if self
+                    .get_slot_in_use(sid)
+                    .map_or(false, |u| u == SLOT_IN_USE_VALID)
+                {
+                    self.get_slot_offset_length(sid)
+                        .map(|(off, len)| (sid, off as usize, len as usize))
+                } else {
+                    None
+                }
+            })
+            .collect();
+        used.sort_by_key(|&(_, off, _)| off);
+
+        let mut write_pos = body_start;
+        for (slot_id, old_offset, length) in used {
+            if old_offset != write_pos {
+                self.data.copy_within(old_offset..old_offset + length, write_pos);
+            }
+            self.write_slot(slot_id, write_pos as Offset, length as SlotLength, SLOT_IN_USE_VALID);
+            write_pos += length;
+        }
+        self.set_free_start(write_pos);
+    }
+
+    ///shifts body right by BYTES_PER_SLOT_META for a new slot entry
+    ///bumps all existing slot offsets to match
+    fn shift_body_for_new_slot(&mut self) {
+        let num_slots = self.get_num_slots();
+        let old_body_start = FIXED_PAGE_META_SIZE + num_slots * BYTES_PER_SLOT_META;
+        let new_body_start = old_body_start + BYTES_PER_SLOT_META;
+
+        let free_start = self.get_free_start();
+        let body_len = free_start.saturating_sub(old_body_start);
+
+        if body_len > 0 {
+            let shift_len = body_len.min(PAGE_SIZE - new_body_start);
+            self.data
+                .copy_within(old_body_start..old_body_start + shift_len, new_body_start);
+        }
+
+        //zero stale bytes now occupied by the new slot entry
+        self.data[old_body_start..new_body_start].fill(0);
+
+        for slot_id in 0..num_slots {
+            let sid = slot_id as SlotId;
+            if self
+                .get_slot_in_use(sid)
+                .map_or(false, |u| u == SLOT_IN_USE_VALID)
+            {
+                if let Some((off, len)) = self.get_slot_offset_length(sid) {
+                    self.write_slot(
+                        sid,
+                        (off as usize + BYTES_PER_SLOT_META) as Offset,
+                        len,
+                        SLOT_IN_USE_VALID,
+                    );
+                }
+            }
+        }
+
+        let new_free = (free_start + BYTES_PER_SLOT_META).min(PAGE_SIZE);
+        self.set_free_start(new_free);
+    }
+}
+
+///consuming iterator over valid records in ascending SlotId order
 pub struct HeapPageIntoIter {
     page: Page,
-    // todo!("Add any fields you need here")
+    current_slot: SlotId,
+    num_slots: usize,
 }
 
-/// The implementation of the (consuming) page iterator.
-/// This should return the values in slotId order (ascending)
 impl Iterator for HeapPageIntoIter {
-    // Each item returned by the iterator is the bytes for the value and the slot id.
     type Item = (Vec<u8>, SlotId);
 
     fn next(&mut self) -> Option<Self::Item> {
-        todo!("Your code here")
+        while (self.current_slot as usize) < self.num_slots {
+            let slot_id = self.current_slot;
+            self.current_slot += 1;
+            if let Some(value) = self.page.get_value(slot_id) {
+                return Some((value, slot_id));
+            }
+        }
+        None
     }
 }
 
-/// The implementation of IntoIterator which allows an iterator to be created
-/// for a page. This should create the PageIter struct with the appropriate state/metadata
-/// on initialization.
+///creates a consuming iterator from a page
 impl IntoIterator for Page {
     type Item = (Vec<u8>, SlotId);
     type IntoIter = HeapPageIntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        todo!("Your code here")
+        let num_slots = self.get_num_slots();
+        HeapPageIntoIter {
+            page: self,
+            current_slot: 0,
+            num_slots,
+        }
     }
 }
 

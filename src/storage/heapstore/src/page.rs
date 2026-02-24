@@ -4,58 +4,49 @@ use common::PAGE_SIZE;
 use std::fmt;
 use std::fmt::Write;
 
-// Type to hold any value smaller than the size of a page.
-// We choose u16 because it is sufficient to represent any slot that fits in a 4096-byte-sized page.
-// Note that you will need to cast Offset to usize if you want to use it to index an array.
+///page offset u16 fits any offset in a 4096 byte page cast to usize before indexing
 pub type Offset = u16;
-// For debug
+//for debug formatting
 const BYTES_PER_LINE: usize = 40;
 
-/// Page struct. This must occupy not more than PAGE_SIZE when serialized.
-/// In the header, you are allowed to allocate 8 bytes for general page metadata and
-/// 6 bytes per value/entry/slot stored. For example a page that has stored 3 values, can use
-/// up to 8+3*6=26 bytes, leaving the rest (PAGE_SIZE-26 for data) when serialized.
-/// If you delete a value, you do not need reclaim header space the way you must reclaim page
-/// body space. E.g., if you insert 3 values then delete 2 of them, your header can remain 26
-/// bytes & subsequent inserts can simply add 6 more bytes to the header as normal.
-/// The rest must filled as much as possible to hold values.
+///initial num_slots for a new page
+const INITIAL_NUM_SLOTS: u16 = 0;
+///initial free_start body begins after the 8 byte page metadata
+const INITIAL_FREE_START: Offset = 8;
+
+///fixed size page with 8 bytes metadata and 6 bytes per slot
 pub struct Page {
-    /// The data for data
+    ///raw page bytes
     pub(crate) data: [u8; PAGE_SIZE],
 }
 
-/// The functions required for page
 impl Page {
-    /// Create a new page
-    /// HINT: To convert a variable x to bytes using little endian, use
-    /// x.to_le_bytes()
+    ///new empty page with the given page_id
     pub fn new(page_id: PageId) -> Self {
-        todo!("Your code here")
+        let mut data = [0u8; PAGE_SIZE];
+        data[0..2].copy_from_slice(&page_id.to_le_bytes());
+        data[2..4].copy_from_slice(&INITIAL_NUM_SLOTS.to_le_bytes());
+        data[4..6].copy_from_slice(&INITIAL_FREE_START.to_le_bytes());
+        Page { data }
     }
 
-    /// Return the page id for a page
-    ///
-    /// HINT to create a primitive data type from a slice you can use the following
-    /// (the example is for a u16 type and the data store in little endian)
-    /// u16::from_le_bytes(data[X..Y].try_into().unwrap());
+    ///page ID
     pub fn get_page_id(&self) -> PageId {
-        todo!("Your code here")
+        PageId::from_le_bytes(self.data[0..2].try_into().unwrap())
     }
 
-    /// Create a page from a byte array
+    ///page from a raw byte array
     #[allow(dead_code)]
     pub fn from_bytes(data: [u8; PAGE_SIZE]) -> Self {
-        todo!("Your code here")
+        Page { data }
     }
 
-    /// Get a reference to the bytes of the page
-    ///
+    ///reference to the page's raw bytes
     pub fn to_bytes(&self) -> &[u8; PAGE_SIZE] {
-        todo!("Your code here")
+        &self.data
     }
 
-    /// Utility function for comparing the bytes of another page.
-    /// Returns a vec  of Offset and byte diff
+    ///list of offsets and differing bytes where this page differs from other_page
     #[allow(dead_code)]
     pub fn compare_page(&self, other_page: Vec<u8>) -> Vec<(Offset, Vec<u8>)> {
         let mut res = Vec::new();
@@ -72,7 +63,7 @@ impl Page {
                 }
                 diff_vec.push(*b1);
             } else if in_diff {
-                //end the diff
+                //end diff
                 res.push((diff_start as Offset, diff_vec.clone()));
                 diff_vec.clear();
                 in_diff = false;
