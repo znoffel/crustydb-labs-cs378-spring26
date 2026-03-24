@@ -15,6 +15,17 @@ Please see the [handout instructions](docs/lab1-heappage.md) for more informatio
 
 Do not modify any other files in the repository.
 
+## Lab 2 - HeapStore Milestone
+
+Complete the implementation of the Heapstore in the `src/storage/heapstore/src`
+crate. The files that you need to modify are:
+
+- `src/storage/heapstore/src/heapfile.rs`
+- `src/storage/heapstore/src/heapfileiter.rs`
+- `src/storage/heapstore/src/storage_manager.rs`
+
+Please see the [handout instructions](docs/lab2-heapfile.md) for more information.
+
 ## Running and Testing CrustyDB End-to-End
 
 Once you have completed the major milestones of CrustyDB, you can build the
