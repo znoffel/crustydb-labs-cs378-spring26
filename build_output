@@ -1,0 +1,1122 @@
+   Compiling heapstore v0.1.0 (/u/zmn232/database-design/crustydb-labs-cs378-spring26/src/storage/heapstore)
+   Compiling cli-crusty v0.1.0 (/u/zmn232/database-design/crustydb-labs-cs378-spring26/src/cli-crusty)
+error[E0463]: can't find crate for `clap`
+ --> src/cli-crusty/src/main.rs:1:5
+  |
+1 | use clap::Parser;
+  |     ^^^^ can't find crate
+
+error[E0463]: can't find crate for `cli_crusty`
+ --> src/cli-crusty/src/main.rs:2:5
+  |
+2 | use cli_crusty::{Client, ClientConfig};
+  |     ^^^^^^^^^^ can't find crate
+
+For more information about this error, try `rustc --explain E0463`.
+error: could not compile `cli-crusty` (bin "cli-crusty") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error[E0460]: found possibly newer version of crate `std` which `log` depends on
+ --> src/storage/heapstore/src/lib.rs:6:1
+  |
+6 | extern crate log;
+  | ^^^^^^^^^^^^^^^^^
+  |
+  = note: perhaps that crate needs to be recompiled?
+  = note: the following crate versions were found:
+          crate `std`: /usr/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-74aa92219e1a8d2b.rlib
+          crate `std`: /usr/lib/x86_64-linux-gnu/libstd-74aa92219e1a8d2b.so
+          crate `log`: /u/zmn232/database-design/crustydb-labs-cs378-spring26/target/debug/deps/liblog-3e1b94bb026b175c.rmeta
+
+error[E0460]: found possibly newer version of crate `std` which `serde` depends on
+ --> src/storage/heapstore/src/lib.rs:8:1
+  |
+8 | extern crate serde;
+  | ^^^^^^^^^^^^^^^^^^^
+  |
+  = note: perhaps that crate needs to be recompiled?
+  = note: the following crate versions were found:
+          crate `std`: /usr/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-74aa92219e1a8d2b.rlib
+          crate `std`: /usr/lib/x86_64-linux-gnu/libstd-74aa92219e1a8d2b.so
+          crate `serde`: /u/zmn232/database-design/crustydb-labs-cs378-spring26/target/debug/deps/libserde-168c840e12caf57b.rmeta
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/heap_page.rs:3:5
+  |
+3 | use common::prelude::*;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/heapfileiter.rs:4:5
+  |
+4 | use common::prelude::*;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/page.rs:2:5
+  |
+2 | use common::prelude::*;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/testutil.rs:8:5
+  |
+8 | use common::testutil::*;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/heapfile.rs:2:5
+  |
+2 | use common::prelude::*;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/storage_manager.rs:5:5
+  |
+5 | use common::prelude::*;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/heap_page.rs:4:5
+  |
+4 | use common::PAGE_SIZE;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/heapfile.rs:3:5
+  |
+3 | use common::PAGE_SIZE;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/page.rs:3:5
+  |
+3 | use common::PAGE_SIZE;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/storage_manager.rs:6:5
+  |
+6 | use common::storage_trait::StorageTrait;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/storage_manager.rs:7:5
+  |
+7 | use common::testutil::gen_random_test_sm_dir;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/storage_manager.rs:8:5
+  |
+8 | use common::PAGE_SIZE;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/testutil.rs:5:5
+  |
+5 | use common::ids::TransactionId;
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/testutil.rs:6:5
+  |
+6 | use common::ids::{ContainerId, PageId, SlotId};
+  |     ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+ --> src/storage/heapstore/src/testutil.rs:7:5
+  |
+7 | use common::storage_trait::StorageTrait;
+  |     ^^^^^^ can't find crate
+
+error[E0432]: unresolved imports `common::PAGE_SIZE`, `common::PAGE_SIZE`, `common::PAGE_SIZE`, `common::storage_trait::StorageTrait`, `common::testutil::gen_random_test_sm_dir`, `common::PAGE_SIZE`, `common::ids::TransactionId`, `common::ids::ContainerId`, `common::ids::PageId`, `common::ids::SlotId`, `common::storage_trait::StorageTrait`
+ --> src/storage/heapstore/src/heap_page.rs:4:5
+  |
+4 | use common::PAGE_SIZE;
+  |     ^^^^^^^^^^^^^^^^^
+  |
+ ::: src/storage/heapstore/src/heapfile.rs:3:5
+  |
+3 | use common::PAGE_SIZE;
+  |     ^^^^^^^^^^^^^^^^^
+  |
+ ::: src/storage/heapstore/src/page.rs:3:5
+  |
+3 | use common::PAGE_SIZE;
+  |     ^^^^^^^^^^^^^^^^^
+  |
+ ::: src/storage/heapstore/src/storage_manager.rs:6:5
+  |
+6 | use common::storage_trait::StorageTrait;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 | use common::testutil::gen_random_test_sm_dir;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+8 | use common::PAGE_SIZE;
+  |     ^^^^^^^^^^^^^^^^^
+  |
+ ::: src/storage/heapstore/src/testutil.rs:5:5
+  |
+5 | use common::ids::TransactionId;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+6 | use common::ids::{ContainerId, PageId, SlotId};
+  |                   ^^^^^^^^^^^  ^^^^^^  ^^^^^^
+7 | use common::storage_trait::StorageTrait;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: cannot find macro `trace` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:79:9
+   |
+79 |         trace!(
+   |         ^^^^^
+
+error: cannot find derive macro `Serialize` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:27:10
+   |
+27 | #[derive(Serialize, Deserialize)]
+   |          ^^^^^^^^^
+
+error: cannot find derive macro `Deserialize` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:27:21
+   |
+27 | #[derive(Serialize, Deserialize)]
+   |                     ^^^^^^^^^^^
+
+error: cannot find attribute `serde` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:34:7
+   |
+34 |     #[serde(skip)]
+   |       ^^^^^
+   |
+note: `serde` is imported here, but it is an unresolved item, not an attribute
+  --> src/storage/heapstore/src/lib.rs:8:1
+   |
+8  | extern crate serde;
+   | ^^^^^^^^^^^^^^^^^^^
+
+error: cannot find macro `debug` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:108:13
+    |
+108 |             debug!("Loading storage manager from config file {:?}", sm_file);
+    |             ^^^^^
+
+error: cannot find macro `debug` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:135:13
+    |
+135 |             debug!("Making new storage_manager in directory {:?}", storage_dir);
+    |             ^^^^^
+
+error: cannot find macro `debug` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:149:9
+    |
+149 |         debug!("Making new temp storage_manager {:?}", storage_dir);
+    |         ^^^^^
+
+error: cannot find macro `debug` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:352:9
+    |
+352 |         debug!("serializing storage manager");
+    |         ^^^^^
+
+error: cannot find macro `debug` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:367:13
+    |
+367 |             debug!("Removing storage path on drop {:?}", self.storage_dir);
+    |             ^^^^^
+
+error[E0463]: can't find crate for `serde_json`
+   --> src/storage/heapstore/src/storage_manager.rs:111:17
+    |
+111 |                 serde_json::from_reader(reader).expect("error reading from json");
+    |                 ^^^^^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+   --> src/storage/heapstore/src/storage_manager.rs:247:26
+    |
+247 |         _container_type: common::ids::StateType,
+    |                          ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `common`
+   --> src/storage/heapstore/src/storage_manager.rs:269:51
+    |
+269 |         self.create_container(container_id, None, common::ids::StateType::BaseTable, None)
+    |                                                   ^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `serde_json`
+   --> src/storage/heapstore/src/storage_manager.rs:355:9
+    |
+355 |         serde_json::to_writer(
+    |         ^^^^^^^^^^ can't find crate
+
+error[E0412]: cannot find type `SlotId` in this scope
+  --> src/storage/heapstore/src/heap_page.rs:37:53
+   |
+37 |     fn add_value(&mut self, bytes: &[u8]) -> Option<SlotId>;
+   |                                                     ^^^^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+36 | pub trait HeapPage<SlotId> {
+   |                   ++++++++
+
+error[E0412]: cannot find type `SlotId` in this scope
+  --> src/storage/heapstore/src/heap_page.rs:38:34
+   |
+38 |     fn get_value(&self, slot_id: SlotId) -> Option<Vec<u8>>;
+   |                                  ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+  --> src/storage/heapstore/src/heap_page.rs:39:41
+   |
+39 |     fn delete_value(&mut self, slot_id: SlotId) -> Option<()>;
+   |                                         ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+  --> src/storage/heapstore/src/heap_page.rs:62:53
+   |
+62 |     fn add_value(&mut self, bytes: &[u8]) -> Option<SlotId> {
+   |                                                     ^^^^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+44 | impl<SlotId> HeapPage for Page {
+   |     ++++++++
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:104:34
+    |
+104 |     fn get_value(&self, slot_id: SlotId) -> Option<Vec<u8>> {
+    |                                  ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:118:41
+    |
+118 |     fn delete_value(&mut self, slot_id: SlotId) -> Option<()> {
+    |                                         ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:168:41
+    |
+168 |     fn slot_meta_offset(&self, slot_id: SlotId) -> usize {
+    |                                         ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:173:47
+    |
+173 |     fn get_slot_offset_length(&self, slot_id: SlotId) -> Option<(Offset, SlotLength)> {
+    |                                               ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:192:40
+    |
+192 |     fn get_slot_in_use(&self, slot_id: SlotId) -> Option<u8> {
+    |                                        ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:201:44
+    |
+201 |     fn set_slot_in_use(&mut self, slot_id: SlotId, in_use: u8) {
+    |                                            ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:207:39
+    |
+207 |     fn write_slot(&mut self, slot_id: SlotId, offset: Offset, length: SlotLength, in_use: u8) {
+    |                                       ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:215:43
+    |
+215 |     fn find_lowest_free_slot_id(&self) -> SlotId {
+    |                                           ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:219:45
+    |
+219 |                 .get_slot_in_use(slot_id as SlotId)
+    |                                             ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:222:35
+    |
+222 |                 return slot_id as SlotId;
+    |                                   ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:225:22
+    |
+225 |         num_slots as SlotId
+    |                      ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:229:56
+    |
+229 |     fn iter_used_slots(&self) -> impl Iterator<Item = (SlotId, SlotLength)> + '_ {
+    |                                                        ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:232:28
+    |
+232 |             let sid = i as SlotId;
+    |                            ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:250:28
+    |
+250 |         let mut used: Vec<(SlotId, usize, usize)> = (0..num_slots)
+    |                            ^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+131 | impl<SlotId> Page {
+    |     ++++++++
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:252:32
+    |
+252 |                 let sid = i as SlotId;
+    |                                ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:297:34
+    |
+297 |             let sid = slot_id as SlotId;
+    |                                  ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:321:19
+    |
+321 |     current_slot: SlotId,
+    |                   ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:326:27
+    |
+326 |     type Item = (Vec<u8>, SlotId);
+    |                           ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `SlotId` in this scope
+   --> src/storage/heapstore/src/heap_page.rs:342:27
+    |
+342 |     type Item = (Vec<u8>, SlotId);
+    |                           ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:16:23
+   |
+16 |     pub container_id: ContainerId,
+   |                       ^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:25:57
+   |
+25 |     pub(crate) fn new(file_path: PathBuf, container_id: ContainerId) -> Result<Self, CrustyError> {
+   |                                                         ^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `CrustyError` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:25:86
+   |
+25 |     pub(crate) fn new(file_path: PathBuf, container_id: ContainerId) -> Result<Self, CrustyError> {
+   |                                                                                      ^^^^^^^^^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+23 | impl<CrustyError> HeapFile {
+   |     +++++++++++++
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:50:32
+   |
+50 |     pub fn num_pages(&self) -> PageId {
+   |                                ^^^^^^ help: a struct with a similar name exists: `Page`
+   |
+  ::: src/storage/heapstore/src/page.rs:18:1
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:53:37
+   |
+53 |         (len / PAGE_SIZE as u64) as PageId
+   |                                     ^^^^^^ help: a struct with a similar name exists: `Page`
+   |
+  ::: src/storage/heapstore/src/page.rs:18:1
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:57:51
+   |
+57 |     pub(crate) fn read_page_from_file(&self, pid: PageId) -> Result<Page, CrustyError> {
+   |                                                   ^^^^^^ help: a struct with a similar name exists: `Page`
+   |
+  ::: src/storage/heapstore/src/page.rs:18:1
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+
+error[E0412]: cannot find type `CrustyError` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:57:75
+   |
+57 |     pub(crate) fn read_page_from_file(&self, pid: PageId) -> Result<Page, CrustyError> {
+   |                                                                           ^^^^^^^^^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+23 | impl<CrustyError> HeapFile {
+   |     +++++++++++++
+
+error[E0412]: cannot find type `CrustyError` in this scope
+  --> src/storage/heapstore/src/heapfile.rs:78:72
+   |
+78 |     pub(crate) fn write_page_to_file(&self, page: &Page) -> Result<(), CrustyError> {
+   |                                                                        ^^^^^^^^^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+23 | impl<CrustyError> HeapFile {
+   |     +++++++++++++
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/heapfileiter.rs:12:22
+   |
+12 |     current_page_id: PageId,
+   |                      ^^^^^^ help: a struct with a similar name exists: `Page`
+   |
+  ::: src/storage/heapstore/src/page.rs:18:1
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/heapfileiter.rs:14:20
+   |
+14 |     start_page_id: PageId,
+   |                    ^^^^^^ help: a struct with a similar name exists: `Page`
+   |
+  ::: src/storage/heapstore/src/page.rs:18:1
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+
+error[E0412]: cannot find type `SlotId` in this scope
+  --> src/storage/heapstore/src/heapfileiter.rs:16:27
+   |
+16 |     start_slot_id: Option<SlotId>,
+   |                           ^^^^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+8  | pub struct HeapFileIterator<SlotId> {
+   |                            ++++++++
+
+error[E0412]: cannot find type `TransactionId` in this scope
+  --> src/storage/heapstore/src/heapfileiter.rs:23:29
+   |
+23 |     pub(crate) fn new(_tid: TransactionId, hf: Arc<HeapFile>) -> Self {
+   |                             ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `TransactionId` in this scope
+  --> src/storage/heapstore/src/heapfileiter.rs:34:34
+   |
+34 |     pub(crate) fn new_from(_tid: TransactionId, hf: Arc<HeapFile>, value_id: ValueId) -> Self {
+   |                                  ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ValueId` in this scope
+  --> src/storage/heapstore/src/heapfileiter.rs:34:78
+   |
+34 |     pub(crate) fn new_from(_tid: TransactionId, hf: Arc<HeapFile>, value_id: ValueId) -> Self {
+   |                                                                              ^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ValueId` in this scope
+  --> src/storage/heapstore/src/heapfileiter.rs:47:27
+   |
+47 |     type Item = (Vec<u8>, ValueId);
+   |                           ^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/page.rs:25:25
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+...
+25 |     pub fn new(page_id: PageId) -> Self {
+   |                         ^^^^^^ help: a struct with a similar name exists: `Page`
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/page.rs:34:34
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+...
+34 |     pub fn get_page_id(&self) -> PageId {
+   |                                  ^^^^^^ help: a struct with a similar name exists: `Page`
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:18:51
+   |
+18 | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+   |                                                   ^^^^^^^^^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+18 | pub(crate) type ContainerMap<ContainerId> = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+   |                             +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:20:55
+   |
+18 | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+   | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+19 | ///maps container ids to the path of their heap file on disk
+20 | pub(crate) type ContainerPathMap = Arc<RwLock<HashMap<ContainerId, Arc<PathBuf>>>>;
+   |                                                       ^^^^^^^^^^^
+   |
+help: a type alias with a similar name exists
+   |
+20 | pub(crate) type ContainerPathMap = Arc<RwLock<HashMap<ContainerMap, Arc<PathBuf>>>>;
+   |                                                       ~~~~~~~~~~~~
+help: you might be missing a type parameter
+   |
+20 | pub(crate) type ContainerPathMap<ContainerId> = Arc<RwLock<HashMap<ContainerId, Arc<PathBuf>>>>;
+   |                                 +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:42:23
+   |
+18 | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+   | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+42 |         container_id: ContainerId,
+   |                       ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:43:18
+   |
+43 |         page_id: PageId,
+   |                  ^^^^^^ help: a struct with a similar name exists: `Page`
+   |
+  ::: src/storage/heapstore/src/page.rs:18:1
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+
+error[E0412]: cannot find type `TransactionId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:44:15
+   |
+44 |         _tid: TransactionId,
+   |               ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `Permissions` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:45:16
+   |
+45 |         _perm: Permissions,
+   |                ^^^^^^^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+1  + use crate::storage_manager::fs::Permissions;
+   |
+1  + use std::fs::Permissions;
+   |
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:56:23
+   |
+18 | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+   | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+56 |         container_id: ContainerId,
+   |                       ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `TransactionId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:58:15
+   |
+58 |         _tid: TransactionId,
+   |               ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `CrustyError` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:59:21
+   |
+59 |     ) -> Result<(), CrustyError> {
+   |                     ^^^^^^^^^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+38 | impl<CrustyError> StorageManager {
+   |     +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:68:43
+   |
+18 | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+   | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+68 |     fn get_num_pages(&self, container_id: ContainerId) -> PageId {
+   |                                           ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:68:59
+   |
+68 |     fn get_num_pages(&self, container_id: ContainerId) -> PageId {
+   |                                                           ^^^^^^ help: a struct with a similar name exists: `Page`
+   |
+  ::: src/storage/heapstore/src/page.rs:18:1
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:75:64
+   |
+18 | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+   | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+75 |     pub(crate) fn get_hf_read_write_count(&self, container_id: ContainerId) -> (u16, u16) {
+   |                                                                ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `ContainerId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:87:48
+   |
+18 | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+   | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+87 |     pub fn get_page_debug(&self, container_id: ContainerId, page_id: PageId) -> String {
+   |                                                ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `PageId` in this scope
+  --> src/storage/heapstore/src/storage_manager.rs:87:70
+   |
+87 |     pub fn get_page_debug(&self, container_id: ContainerId, page_id: PageId) -> String {
+   |                                                                      ^^^^^^ help: a struct with a similar name exists: `Page`
+   |
+  ::: src/storage/heapstore/src/page.rs:18:1
+   |
+18 | pub struct Page {
+   | --------------- similarly named struct `Page` defined here
+
+error[E0433]: failed to resolve: use of undeclared type `Permissions`
+  --> src/storage/heapstore/src/storage_manager.rs:92:13
+   |
+92 |             Permissions::ReadOnly,
+   |             ^^^^^^^^^^^ use of undeclared type `Permissions`
+   |
+help: consider importing one of these items
+   |
+1  + use crate::storage_manager::fs::Permissions;
+   |
+1  + use std::fs::Permissions;
+   |
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:113:33
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+113 |             let mut hm: HashMap<ContainerId, Arc<HeapFile>> = HashMap::new();
+    |                                 ^^^^^^^^^^^
+    |
+help: a type alias with a similar name exists
+    |
+113 |             let mut hm: HashMap<ContainerMap, Arc<HeapFile>> = HashMap::new();
+    |                                 ~~~~~~~~~~~~
+help: you might be missing a type parameter
+    |
+101 | impl<ContainerId> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:114:38
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+114 |             let mut hmfiles: HashMap<ContainerId, Arc<PathBuf>> = HashMap::new();
+    |                                      ^^^^^^^^^^^
+    |
+help: a type alias with a similar name exists
+    |
+114 |             let mut hmfiles: HashMap<ContainerMap, Arc<PathBuf>> = HashMap::new();
+    |                                      ~~~~~~~~~~~~
+help: you might be missing a type parameter
+    |
+101 | impl<ContainerId> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:162:23
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+162 |         container_id: ContainerId,
+    |                       ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `TransactionId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:164:14
+    |
+164 |         tid: TransactionId,
+    |              ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ValueId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:165:10
+    |
+165 |     ) -> ValueId {
+    |          ^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:197:23
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+197 |         container_id: ContainerId,
+    |                       ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `TransactionId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:199:14
+    |
+199 |         tid: TransactionId,
+    |              ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ValueId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:200:14
+    |
+200 |     ) -> Vec<ValueId> {
+    |              ^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<ValueId> StorageTrait for StorageManager {
+    |     +++++++++
+
+error[E0412]: cannot find type `ValueId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:209:32
+    |
+209 |     fn delete_value(&self, id: ValueId, _tid: TransactionId) -> Result<(), CrustyError> {
+    |                                ^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `TransactionId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:209:47
+    |
+209 |     fn delete_value(&self, id: ValueId, _tid: TransactionId) -> Result<(), CrustyError> {
+    |                                               ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `CrustyError` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:209:76
+    |
+209 |     fn delete_value(&self, id: ValueId, _tid: TransactionId) -> Result<(), CrustyError> {
+    |                                                                            ^^^^^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<CrustyError> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `ValueId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:235:13
+    |
+235 |         id: ValueId,
+    |             ^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `TransactionId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:236:14
+    |
+236 |         tid: TransactionId,
+    |              ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ValueId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:237:17
+    |
+237 |     ) -> Result<ValueId, CrustyError> {
+    |                 ^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<ValueId> StorageTrait for StorageManager {
+    |     +++++++++
+
+error[E0412]: cannot find type `CrustyError` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:237:26
+    |
+237 |     ) -> Result<ValueId, CrustyError> {
+    |                          ^^^^^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<CrustyError> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:245:23
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+245 |         container_id: ContainerId,
+    |                       ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:248:35
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+248 |         _dependencies: Option<Vec<ContainerId>>,
+    |                                   ^^^^^^^^^^^
+    |
+help: a type alias with a similar name exists
+    |
+248 |         _dependencies: Option<Vec<ContainerMap>>,
+    |                                   ~~~~~~~~~~~~
+help: you might be missing a type parameter
+    |
+101 | impl<ContainerId> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `CrustyError` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:249:21
+    |
+249 |     ) -> Result<(), CrustyError> {
+    |                     ^^^^^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<CrustyError> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:268:42
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+268 |     fn create_table(&self, container_id: ContainerId) -> Result<(), CrustyError> {
+    |                                          ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `CrustyError` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:268:69
+    |
+268 |     fn create_table(&self, container_id: ContainerId) -> Result<(), CrustyError> {
+    |                                                                     ^^^^^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<CrustyError> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:273:46
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+273 |     fn remove_container(&self, container_id: ContainerId) -> Result<(), CrustyError> {
+    |                                              ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `CrustyError` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:273:73
+    |
+273 |     fn remove_container(&self, container_id: ContainerId) -> Result<(), CrustyError> {
+    |                                                                         ^^^^^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<CrustyError> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:285:23
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+285 |         container_id: ContainerId,
+    |                       ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `TransactionId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:286:14
+    |
+286 |         tid: TransactionId,
+    |              ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `Permissions` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:287:16
+    |
+287 |         _perm: Permissions,
+    |                ^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing one of these items
+    |
+1   + use crate::storage_manager::fs::Permissions;
+    |
+1   + use std::fs::Permissions;
+    |
+
+error[E0412]: cannot find type `ContainerId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:301:23
+    |
+18  | pub(crate) type ContainerMap = Arc<RwLock<HashMap<ContainerId, Arc<HeapFile>>>>;
+    | -------------------------------------------------------------------------------- similarly named type alias `ContainerMap` defined here
+...
+301 |         container_id: ContainerId,
+    |                       ^^^^^^^^^^^ help: a type alias with a similar name exists: `ContainerMap`
+
+error[E0412]: cannot find type `TransactionId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:302:14
+    |
+302 |         tid: TransactionId,
+    |              ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `Permissions` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:303:16
+    |
+303 |         _perm: Permissions,
+    |                ^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing one of these items
+    |
+1   + use crate::storage_manager::fs::Permissions;
+    |
+1   + use std::fs::Permissions;
+    |
+
+error[E0412]: cannot find type `ValueId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:304:16
+    |
+304 |         start: ValueId,
+    |                ^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `ValueId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:318:13
+    |
+318 |         id: ValueId,
+    |             ^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `TransactionId` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:319:14
+    |
+319 |         tid: TransactionId,
+    |              ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `Permissions` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:320:15
+    |
+320 |         perm: Permissions,
+    |               ^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing one of these items
+    |
+1   + use crate::storage_manager::fs::Permissions;
+    |
+1   + use std::fs::Permissions;
+    |
+
+error[E0412]: cannot find type `CrustyError` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:321:26
+    |
+321 |     ) -> Result<Vec<u8>, CrustyError> {
+    |                          ^^^^^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<CrustyError> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0412]: cannot find type `CrustyError` in this scope
+   --> src/storage/heapstore/src/storage_manager.rs:340:35
+    |
+340 |     fn reset(&self) -> Result<(), CrustyError> {
+    |                                   ^^^^^^^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+101 | impl<CrustyError> StorageTrait for StorageManager {
+    |     +++++++++++++
+
+error[E0433]: failed to resolve: use of undeclared type `CrustyError`
+  --> src/storage/heapstore/src/heapfile.rs:34:28
+   |
+34 |                 return Err(CrustyError::CrustyError(format!(
+   |                            ^^^^^^^^^^^ use of undeclared type `CrustyError`
+
+error[E0433]: failed to resolve: use of undeclared type `CrustyError`
+  --> src/storage/heapstore/src/heapfile.rs:63:24
+   |
+63 |             return Err(CrustyError::CrustyError(format!(
+   |                        ^^^^^^^^^^^ use of undeclared type `CrustyError`
+
+error[E0433]: failed to resolve: use of undeclared type `ValueId`
+  --> src/storage/heapstore/src/heapfileiter.rs:65:31
+   |
+65 |                     let vid = ValueId::new_slot(self.hf.container_id, page_id, slot_id);
+   |                               ^^^^^^^ use of undeclared type `ValueId`
+
+error[E0433]: failed to resolve: use of undeclared type `PageId`
+  --> src/storage/heapstore/src/page.rs:35:9
+   |
+35 |         PageId::from_le_bytes(self.data[0..2].try_into().unwrap())
+   |         ^^^^^^
+   |         |
+   |         use of undeclared type `PageId`
+   |         help: a struct with a similar name exists: `Page`
+
+error[E0433]: failed to resolve: use of undeclared type `CrustyError`
+  --> src/storage/heapstore/src/storage_manager.rs:63:28
+   |
+63 |             .ok_or_else(|| CrustyError::CrustyError(format!("container {} not found", container_id)))?;
+   |                            ^^^^^^^^^^^ use of undeclared type `CrustyError`
+
+error[E0433]: failed to resolve: use of undeclared type `TransactionId`
+  --> src/storage/heapstore/src/storage_manager.rs:91:13
+   |
+91 |             TransactionId::new(),
+   |             ^^^^^^^^^^^^^ use of undeclared type `TransactionId`
+
+error[E0433]: failed to resolve: use of undeclared type `ValueId`
+   --> src/storage/heapstore/src/storage_manager.rs:181:24
+    |
+181 |                 return ValueId::new_slot(container_id, page_id, slot_id);
+    |                        ^^^^^^^ use of undeclared type `ValueId`
+
+error[E0433]: failed to resolve: use of undeclared type `ValueId`
+   --> src/storage/heapstore/src/storage_manager.rs:191:9
+    |
+191 |         ValueId::new_slot(container_id, new_page_id, slot_id)
+    |         ^^^^^^^ use of undeclared type `ValueId`
+
+error[E0433]: failed to resolve: use of undeclared type `CrustyError`
+   --> src/storage/heapstore/src/storage_manager.rs:324:28
+    |
+324 |             .ok_or_else(|| CrustyError::CrustyError("missing page_id in ValueId".to_string()))?;
+    |                            ^^^^^^^^^^^ use of undeclared type `CrustyError`
+
+error[E0433]: failed to resolve: use of undeclared type `CrustyError`
+   --> src/storage/heapstore/src/storage_manager.rs:327:28
+    |
+327 |             .ok_or_else(|| CrustyError::CrustyError("missing slot_id in ValueId".to_string()))?;
+    |                            ^^^^^^^^^^^ use of undeclared type `CrustyError`
+
+error[E0433]: failed to resolve: use of undeclared type `CrustyError`
+   --> src/storage/heapstore/src/storage_manager.rs:330:28
+    |
+330 |             .ok_or_else(|| CrustyError::CrustyError(format!("page {} not found", page_id)))?;
+    |                            ^^^^^^^^^^^ use of undeclared type `CrustyError`
+
+error[E0433]: failed to resolve: use of undeclared type `CrustyError`
+   --> src/storage/heapstore/src/storage_manager.rs:332:28
+    |
+332 |             .ok_or_else(|| CrustyError::CrustyError(format!("slot {} not found", slot_id)))
+    |                            ^^^^^^^^^^^ use of undeclared type `CrustyError`
+
+error[E0425]: cannot find function `get_random_vec_of_byte_vec` in this scope
+  --> src/storage/heapstore/src/testutil.rs:48:21
+   |
+48 |     let to_insert = get_random_vec_of_byte_vec(vals_per_page as usize, min_size, max_size);
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+Some errors have detailed explanations: E0412, E0425, E0432, E0433, E0460, E0463.
+For more information about an error, try `rustc --explain E0412`.
+error: could not compile `heapstore` (lib) due to 133 previous errors

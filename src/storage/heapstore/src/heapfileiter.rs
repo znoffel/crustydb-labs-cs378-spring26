@@ -1,38 +1,74 @@
-use crate::heap_page::HeapPage;
 use crate::heap_page::HeapPageIntoIter;
 use crate::heapfile::HeapFile;
+use crate::page::Page;
 use common::prelude::*;
 use std::sync::Arc;
 
-#[allow(dead_code)]
-/// The struct for a HeapFileIterator.
-/// We use a slightly different approach for HeapFileIterator than
-/// standard way of Rust's IntoIter for simplicity (avoiding lifetime issues).
-/// This should store the state/metadata required to iterate through the file.
-///
-/// HINT: This will need an Arc<HeapFile>
 pub struct HeapFileIterator {
-    //TODO milestone hs
+    hf: Arc<HeapFile>,
+    current_page_id: PageId,
+    start_page_id: PageId,
+    start_slot_id: Option<SlotId>,
+    current_page_iter: Option<HeapPageIntoIter>,
 }
 
-/// Required HeapFileIterator functions
 impl HeapFileIterator {
-    /// Create a new HeapFileIterator that stores the tid, and heapFile pointer.
-    /// This should initialize the state required to iterate through the heap file.
-    pub(crate) fn new(tid: TransactionId, hf: Arc<HeapFile>) -> Self {
-        panic!("TODO milestone hs");
+    pub(crate) fn new(_tid: TransactionId, hf: Arc<HeapFile>) -> Self {
+        HeapFileIterator {
+            hf,
+            current_page_id: 0,
+            start_page_id: 0,
+            start_slot_id: None,
+            current_page_iter: None,
+        }
     }
 
-    pub(crate) fn new_from(tid: TransactionId, hf: Arc<HeapFile>, value_id: ValueId) -> Self {
-        panic!("TODO milestone hs");
+    pub(crate) fn new_from(_tid: TransactionId, hf: Arc<HeapFile>, value_id: ValueId) -> Self {
+        let start_page = value_id.page_id.unwrap_or(0);
+        HeapFileIterator {
+            hf,
+            current_page_id: start_page,
+            start_page_id: start_page,
+            start_slot_id: value_id.slot_id,
+            current_page_iter: None,
+        }
     }
 }
 
-/// Trait implementation for heap file iterator.
-/// Note this will need to iterate through the pages and their respective iterators.
 impl Iterator for HeapFileIterator {
     type Item = (Vec<u8>, ValueId);
+
     fn next(&mut self) -> Option<Self::Item> {
-        panic!("TODO milestone hs");
+        loop {
+            let item = self.current_page_iter.as_mut().and_then(|iter| iter.next());
+            match item {
+                Some((bytes, slot_id)) => {
+                    let page_id = self.current_page_id - 1;
+                    if page_id == self.start_page_id {
+                        if let Some(start_slot) = self.start_slot_id {
+                            if slot_id < start_slot {
+                                continue;
+                            }
+                        }
+                    }
+                    let vid = ValueId::new_slot(self.hf.container_id, page_id, slot_id);
+                    return Some((bytes, vid));
+                }
+                None => {
+                    self.current_page_iter = None;
+                    let num_pages = self.hf.num_pages();
+                    if self.current_page_id >= num_pages {
+                        return None;
+                    }
+                    match self.hf.read_page_from_file(self.current_page_id) {
+                        Ok(page) => {
+                            self.current_page_id += 1;
+                            self.current_page_iter = Some(page.into_iter());
+                        }
+                        Err(_) => return None,
+                    }
+                }
+            }
+        }
     }
 }

@@ -1,0 +1,41 @@
+HeapFile
+
+Pages are fixed size so that byte offset for page id can be pid * PAGE_SIZE. 
+read_page_from_file seeks to that offset and reads PAGE_SIZE bytes into a buffer, 
+then we wrap it with Page::from_bytes. The function write_page_to_file seeks to the 
+same offset and writes the bytes directly. We need a write lock for both reads and writes 
+on the Arc<RwLock<File>> because the cursor may be changed by std::io::Seek even for reads. 
+num_pages divides the file length by PAGE_SIZE using a read lock since we dont need to seek.
+
+HeapFileIterator
+
+The iterator hold Arc<Heapfile>, current_page_id counter, HeapPageIntoIter for current page. 
+When we call next() we advance the inner page iterator. If we reached the end then it loads 
+the next page from heap file and create new page iterator. For new from we need 2 extra fields 
+for starting page and starting slot so that we only return slots >= start_slot_id on the 1st page. 
+We only apply the filter on the starting page. 
+
+StorageManager
+We map container to HeapFiles with 2 Arc<RwLock<HashMap>> fields, One for
+the live HeapFile handles and one for PathBufs. When we shutdown we erialize the path map to json 
+so new() can reconstruct the HeapFile handles on restart. insert_value scans pages in
+order and writes to the first one with enough free space. if none exists then we add a new
+page. reset clears both in memory maps and deletes all files inside
+the storage directory without removing the directory itself. HEAPFILE_EXTENSION
+keeps the file naming logic in one place.
+
+
+Time Spent
+
+~30 hours. The trickiest parts were the HeapFileIterator start slot filter (making
+sure it only applies to the starting page and not all subsequent pages) and the
+reset/shutdown interaction with the file handles needing to be dropped before
+filesystem operations.
+
+Liked the separation: Page -> HeapFile -> StorageManager made each piece easy
+to think about separately. 
+Disliked that Seek requires a write lock even for reads
+
+Completeness
+
+passing all test cases

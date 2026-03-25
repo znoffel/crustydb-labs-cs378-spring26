@@ -7,33 +7,16 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicU16, Ordering};
 use std::sync::{Arc, RwLock};
 
-//use std::io::BufWriter;
 use std::io::{Seek, SeekFrom};
 
-/// The struct for a heap file.  
-///
-/// HINT: You likely will want to design for interior mutability for concurrent accesses.
-/// eg Arc<RwLock<>> on some internal members
-///
-/// HINT: You will probably not be able to serialize HeapFile, as it needs to maintain a link to a
-/// File object, which cannot be serialized/deserialized/skipped by serde. You don't need to worry
-/// about persisting read_count/write_count during serialization.
-///
-/// Your code should persist what information is needed to recreate the heapfile.
-///
 pub(crate) struct HeapFile {
     pub file: Arc<RwLock<File>>,
-    // Track this HeapFile's container Id
     pub container_id: ContainerId,
-    // The following are for profiling/ correctness checks
     pub read_count: AtomicU16,
     pub write_count: AtomicU16,
 }
 
-/// HeapFile required functions
 impl HeapFile {
-    /// Create a new heapfile for the given path. Return Result<Self> if able to create.
-    /// Errors could arise from permissions, space, etc when trying to create the file used by HeapFile.
     pub(crate) fn new(file_path: PathBuf, container_id: ContainerId) -> Result<Self, CrustyError> {
         let file = match OpenOptions::new()
             .read(true)
@@ -50,42 +33,57 @@ impl HeapFile {
                 )))
             }
         };
-        panic!("TODO milestone hs");
+        Ok(HeapFile {
+            file: Arc::new(RwLock::new(file)),
+            container_id,
+            read_count: AtomicU16::new(0),
+            write_count: AtomicU16::new(0),
+        })
     }
 
-    /// Return the number of pages for this HeapFile.
-    /// Return type is PageId (alias for another type) as we cannot have more
-    /// pages than PageId can hold.
     pub fn num_pages(&self) -> PageId {
-        panic!("TODO milestone hs");
+        let file = self.file.read().unwrap();
+        let len = file.metadata().map(|m| m.len()).unwrap_or(0);
+        (len / PAGE_SIZE as u64) as PageId
     }
 
-    /// Read the page from the file.
-    /// Errors could arise from the filesystem or invalid pageId
-    /// Note: that std::io::{Seek, SeekFrom} require Write locks on the underlying std::fs::File
     pub(crate) fn read_page_from_file(&self, pid: PageId) -> Result<Page, CrustyError> {
-        //If profiling count reads
         #[cfg(feature = "profile")]
         {
             self.read_count.fetch_add(1, Ordering::Relaxed);
         }
-        panic!("TODO milestone hs");
+        if pid >= self.num_pages() {
+            return Err(CrustyError::CrustyError(format!(
+                "page id {} out of range num_pages {}",
+                pid,
+                self.num_pages()
+            )));
+        }
+        let offset = pid as u64 * PAGE_SIZE as u64;
+        let mut file = self.file.write().unwrap();
+        file.seek(SeekFrom::Start(offset))?;
+        let mut buf = [0u8; PAGE_SIZE];
+        file.read_exact(&mut buf)?;
+        Ok(Page::from_bytes(buf))
     }
 
-    /// Take a page and write it to the underlying file.
-    /// This could be an existing page or a new page
     pub(crate) fn write_page_to_file(&self, page: &Page) -> Result<(), CrustyError> {
         trace!(
             "Writing page {} to file {}",
             page.get_page_id(),
             self.container_id
         );
-        //If profiling count writes
         #[cfg(feature = "profile")]
         {
             self.write_count.fetch_add(1, Ordering::Relaxed);
         }
-        panic!("TODO milestone hs");
+        let pid = page.get_page_id();
+        let offset = pid as u64 * PAGE_SIZE as u64;
+        let mut file = self.file.write().unwrap();
+        file.seek(SeekFrom::Start(offset))?;
+        file.write_all(page.to_bytes())?;
+        file.flush()?;
+        Ok(())
     }
 }
 
