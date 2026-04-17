@@ -5,7 +5,6 @@ use common::bytecode_expr::ByteCodeExpr;
 use common::{CrustyError, Field, TableSchema, Tuple};
 use std::collections::HashMap;
 
-/// Hash equi-join implementation. (You can add any other fields that you think are neccessary)
 pub struct HashEqJoin {
     // Static objects (No need to reset on close)
     managers: &'static Managers,
@@ -16,8 +15,15 @@ pub struct HashEqJoin {
     right_expr: ByteCodeExpr,
     left_child: Box<dyn OpIterator>,
     right_child: Box<dyn OpIterator>,
+
     // States (Need to reset on close)
-    // todo!("Your code here")
+    open: bool,
+    /// Hash table built from the left child. Maps join key to all matching left tuples.
+    hash_table: HashMap<Field, Vec<Tuple>>,
+    /// The current right tuple being probed against the hash table.
+    current_right_tuple: Option<Tuple>,
+    /// Index into the matched left tuples for the current right tuple.
+    match_idx: usize,
 }
 
 impl HashEqJoin {
@@ -37,7 +43,28 @@ impl HashEqJoin {
         left_child: Box<dyn OpIterator>,
         right_child: Box<dyn OpIterator>,
     ) -> Self {
-        todo!("Your code here")
+        Self {
+            managers,
+            schema,
+            left_expr,
+            right_expr,
+            left_child,
+            right_child,
+            open: false,
+            hash_table: HashMap::new(),
+            current_right_tuple: None,
+            match_idx: 0,
+        }
+    }
+
+    /// Builds the hash table by reading all tuples from the left child.
+    fn build_hash_table(&mut self) -> Result<(), CrustyError> {
+        self.hash_table.clear();
+        while let Some(left_tuple) = self.left_child.next()? {
+            let key = self.left_expr.eval(&left_tuple);
+            self.hash_table.entry(key).or_default().push(left_tuple);
+        }
+        Ok(())
     }
 }
 
@@ -48,19 +75,60 @@ impl OpIterator for HashEqJoin {
     }
 
     fn open(&mut self) -> Result<(), CrustyError> {
-        todo!("Your code here")
+        if !self.open {
+            self.left_child.open()?;
+            self.right_child.open()?;
+            self.build_hash_table()?;
+            self.current_right_tuple = self.right_child.next()?;
+            self.match_idx = 0;
+            self.open = true;
+        }
+        Ok(())
     }
 
     fn next(&mut self) -> Result<Option<Tuple>, CrustyError> {
-        todo!("Your code here")
+        if !self.open {
+            panic!("Iterator is not open");
+        }
+        loop {
+            let right = match &self.current_right_tuple {
+                None => return Ok(None),
+                Some(t) => t.clone(),
+            };
+
+            let right_key = self.right_expr.eval(&right);
+
+            if let Some(matches) = self.hash_table.get(&right_key) {
+                if self.match_idx < matches.len() {
+                    let joined = matches[self.match_idx].merge(&right);
+                    self.match_idx += 1;
+                    return Ok(Some(joined));
+                }
+            }
+
+            self.current_right_tuple = self.right_child.next()?;
+            self.match_idx = 0;
+        }
     }
 
     fn close(&mut self) -> Result<(), CrustyError> {
-        todo!("Your code here")
+        self.left_child.close()?;
+        self.right_child.close()?;
+        self.hash_table.clear();
+        self.current_right_tuple = None;
+        self.match_idx = 0;
+        self.open = false;
+        Ok(())
     }
 
     fn rewind(&mut self) -> Result<(), CrustyError> {
-        todo!("Your code here")
+        if !self.open {
+            panic!("Iterator is not open");
+        }
+        self.right_child.rewind()?;
+        self.current_right_tuple = self.right_child.next()?;
+        self.match_idx = 0;
+        Ok(())
     }
 
     fn get_schema(&self) -> &TableSchema {

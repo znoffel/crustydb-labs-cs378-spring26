@@ -1,0 +1,64 @@
+Lab 3 Writeup
+
+Solution Description
+
+NestedLoopJoin:
+
+In nested loop join, we keep track of current left tuple with current_left_tuple.
+When we call open(), we open both children and fetch the first left tuple. 
+We call next() so we loop over right tuples for each left tuple. When we finish 
+with the right child we reset the right child and go to the next left tuple. We 
+evaluate left_expr and right_expr for each pair using ByteCodeExpr.eval() and compare. 
+If the condition remains true, we merge the 2 tuples and return result. Otherwise 
+we reset both children and fetch the first left tuple to restart the loop.
+
+HashEqJoin:
+
+For hash join we build a hash table from left child when we call open(). The table 
+maps the result when we evaluate left expr on each left tuple to a list holding 
+all left tuples with that key. We iterate right tuples one at a time, evaluate the 
+right_expr and look up the key in the hash table. When we find all our matches for 
+the right tuple, we go to the next right tuple and reset the match_idx. When we reset
+we reset the right child and match_idx but we keep the hash table since it was build 
+from the left child. 
+
+Aggregate:
+
+For aggregate operator, we use a hashmap to group tuples. The key is the vector 
+of group-by field values. The value is a pair of the accumulated aggregate values 
+and a vector for count used only for AVG. When a tuple first arrives for a group 
+we need to initialize some accumulators. We initialize Count to 1, Avg to the field 
+with value count = 1, and all others start at the field value. The next tuples use
+the provided merge_fields() function to update the accumulator. After we finish 
+consuming input we sort the groups by their key to produce output, then finalize 
+AVG by dividing the sum by the count and converting to a Decimal field. We store 
+the results in vector of tuples in order. 
+
+Design decisions:
+For HashEqJoin, the left child is the build side and the right child is the
+probe side, following the configure() comment that says the left child will
+never be rewound.
+For Aggregate, we pre-compute all agg field values before doing the HashMap
+lookup to avoid borrow conflicts between self.groups and self.agg_expr.
+Results are sorted by group key to match expected test output ordering.
+AVG is tracked as (running sum, count) rather than a running average to avoid
+floating point accumulation issues and to handle the finalization cleanly.
+
+Time Spent
+
+20-25 hours
+
+Liked/Disliked
+
+Liked: The skeleton code (filter.rs, cross_join.rs) gave a good reference for
+how to implement OpIterator correctly. The test cases are well-organized and
+clearly show expected input/output behavior.
+
+Disliked: The AVG operator requires tracking extra state (counts) separately
+from the other aggregation operators, which made the data structure a bit
+awkward. A cleaner abstraction for aggregate state would have been helpful.
+
+Incomplete Parts
+
+All parts are complete and passing all 28 tests (7 nested loop join, 7 hash
+join, 14 aggregate).

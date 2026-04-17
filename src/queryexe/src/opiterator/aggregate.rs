@@ -6,7 +6,6 @@ use common::{AggOp, CrustyError, Field, TableSchema, Tuple};
 use std::cmp::{max, min};
 use std::collections::HashMap;
 
-/// Aggregate operator. (You can add any other fields that you think are neccessary)
 pub struct Aggregate {
     // Static objects (No need to reset on close)
     managers: &'static Managers,
@@ -24,9 +23,15 @@ pub struct Aggregate {
     child: Box<dyn OpIterator>,
     /// If true, then the operator will be rewinded in the future.
     will_rewind: bool,
-    
+
     // States (Need to reset on close)
-    // todo!("Your code here")
+    open: bool,
+    /// Maps group-by key to (accumulated agg values, per-field counts for AVG).
+    groups: HashMap<Vec<Field>, (Vec<Field>, Vec<i64>)>,
+    /// Sorted output tuples ready to be yielded.
+    results: Vec<Tuple>,
+    /// Index into results for the next tuple to return.
+    result_idx: usize,
 }
 
 impl Aggregate {
@@ -39,7 +44,19 @@ impl Aggregate {
         child: Box<dyn OpIterator>,
     ) -> Self {
         assert!(ops.len() == agg_expr.len());
-        todo!("Your code here")
+        Self {
+            managers,
+            schema,
+            groupby_expr,
+            agg_expr,
+            ops,
+            child,
+            will_rewind: false,
+            open: false,
+            groups: HashMap::new(),
+            results: Vec::new(),
+            result_idx: 0,
+        }
     }
 
     fn merge_fields(op: AggOp, field_val: &Field, acc: &mut Field) -> Result<(), CrustyError> {
@@ -64,7 +81,62 @@ impl Aggregate {
     }
 
     pub fn merge_tuple_into_group(&mut self, tuple: &Tuple) {
-        todo!("Your code here");
+        let group_key: Vec<Field> = self.groupby_expr.iter()
+            .map(|expr| expr.eval(tuple))
+            .collect();
+
+        let agg_field_vals: Vec<Field> = self.agg_expr.iter()
+            .map(|expr| expr.eval(tuple))
+            .collect();
+
+        let ops = self.ops.clone();
+
+        if let Some((agg_vals, counts)) = self.groups.get_mut(&group_key) {
+            for i in 0..ops.len() {
+                Self::merge_fields(ops[i], &agg_field_vals[i], &mut agg_vals[i]).unwrap();
+                if ops[i] == AggOp::Avg {
+                    counts[i] += 1;
+                }
+            }
+        } else {
+            let mut agg_vals = Vec::new();
+            let mut counts = Vec::new();
+            for i in 0..ops.len() {
+                if ops[i] == AggOp::Count {
+                    agg_vals.push(Field::Int(1));
+                } else {
+                    agg_vals.push(agg_field_vals[i].clone());
+                }
+                if ops[i] == AggOp::Avg {
+                    counts.push(1i64);
+                } else {
+                    counts.push(0i64);
+                }
+            }
+            self.groups.insert(group_key, (agg_vals, counts));
+        }
+    }
+
+    /// Converts the accumulated groups into sorted result tuples, finalizing AVG.
+    fn finalize_results(&mut self) {
+        let mut sorted_groups: Vec<(Vec<Field>, (Vec<Field>, Vec<i64>))> =
+            self.groups.drain().collect();
+        sorted_groups.sort_by(|a, b| a.0.cmp(&b.0));
+
+        for (group_key, (mut agg_vals, counts)) in sorted_groups {
+            for i in 0..self.ops.len() {
+                if self.ops[i] == AggOp::Avg {
+                    let sum = match &agg_vals[i] {
+                        Field::Int(v) => *v as f64,
+                        _ => panic!("AVG requires a numeric field"),
+                    };
+                    agg_vals[i] = f_decimal(sum / counts[i] as f64);
+                }
+            }
+            let mut fields = group_key;
+            fields.extend(agg_vals);
+            self.results.push(Tuple::new(fields));
+        }
     }
 }
 
@@ -76,19 +148,44 @@ impl OpIterator for Aggregate {
     }
 
     fn open(&mut self) -> Result<(), CrustyError> {
-        todo!("Your code here")
+        if !self.open {
+            self.child.open()?;
+            while let Some(tuple) = self.child.next()? {
+                self.merge_tuple_into_group(&tuple);
+            }
+            self.finalize_results();
+            self.open = true;
+        }
+        Ok(())
     }
 
     fn next(&mut self) -> Result<Option<Tuple>, CrustyError> {
-        todo!("Your code here")
+        if !self.open {
+            panic!("Operator has not been opened");
+        }
+        if self.result_idx < self.results.len() {
+            let tuple = self.results[self.result_idx].clone();
+            self.result_idx += 1;
+            return Ok(Some(tuple));
+        }
+        Ok(None)
     }
 
     fn close(&mut self) -> Result<(), CrustyError> {
-        todo!("Your code here")
+        self.child.close()?;
+        self.groups.clear();
+        self.results.clear();
+        self.result_idx = 0;
+        self.open = false;
+        Ok(())
     }
 
     fn rewind(&mut self) -> Result<(), CrustyError> {
-        todo!("Your code here")
+        if !self.open {
+            panic!("Operator has not been opened");
+        }
+        self.result_idx = 0;
+        Ok(())
     }
 
     fn get_schema(&self) -> &TableSchema {
